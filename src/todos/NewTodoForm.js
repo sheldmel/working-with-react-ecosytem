@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import  './NewTodoForm.css';
+import { createTodo } from "./actions";
+import { connect } from "react-redux";
 
-export const NewTodoForm = () => {
+const NewTodoForm = ({ todos, onCreatePressed }) => {
   const [inputValue, setinputValue] = useState("");
   return (
     <div className="new-todo-form">
@@ -12,7 +14,26 @@ export const NewTodoForm = () => {
         onChange={(e) => setinputValue(e.target.value)}
         placeholder='New Todo'
       />
-      <button className="new-todo-button">Create Todo</button>
+      <button onClick={()=> { 
+          const isDuplicateText = todos.some(todo=> todo.text === inputValue)  
+          if (!isDuplicateText) {
+            onCreatePressed(inputValue); 
+            setinputValue('');
+          } 
+          }} 
+          className="new-todo-button">
+              Create Todo
+    </button>
     </div>
   );
 };
+
+const mapStateToProps = state => ({
+    todos: state.todos,
+});
+
+const mapDispatchToProps = dispatch => ({
+    onCreatePressed: text => dispatch(createTodo(text))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewTodoForm);
